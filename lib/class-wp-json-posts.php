@@ -893,20 +893,20 @@ class WP_JSON_Posts {
 			return new WP_Error( 'json_cannot_edit', __( 'Sorry, you cannot edit this post' ), array( 'status' => 403 ) );
 		}
 
-		global $wpdb;
-		$table = _get_meta_table( 'post' );
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT meta_id, meta_key, meta_value FROM $table WHERE post_id = %d", $id ) );
-
+		// Custom hack to get acf custom fields to work right.
 		$meta = array();
+		$fields = get_fields( $id );
+		$fields = $fields['post_acf'];
 
-		foreach ( $results as $row ) {
-			$value = $this->prepare_meta( $id, $row, true );
-
-			if ( is_wp_error( $value ) ) {
-				continue;
+		if( $fields ) {
+			foreach( $fields as $value ) {
+				$name = str_replace("_field", "", array_shift($value));
+				$field = array(
+					'key' => "post_acf_1_{$name}_content",
+					'value' => $value["{$name}_content"]
+				);
+				array_push( $meta, $field );
 			}
-
-			$meta[] = $value;
 		}
 
 		return apply_filters( 'json_prepare_meta', $meta, $id );
