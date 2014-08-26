@@ -895,15 +895,20 @@ class WP_JSON_Posts {
 
 		// Custom hack to get acf custom fields to work right.
 		$meta = array();
-		$fields = get_fields( $id );
-		$fields = $fields['post_acf'];
+		$fields = get_field_objects($id);
+		$fields = $fields['post_acf']['value'];
 
 		if( $fields ) {
 			foreach( $fields as $value ) {
 				$name = str_replace("_field", "", array_shift($value));
+
+				if(count($value) <= 1) {
+					$value = $value["{$name}_content"];
+				}
+
 				$field = array(
 					'key' => "post_acf_1_{$name}_content",
-					'value' => $value["{$name}_content"]
+					'value' => $value
 				);
 				array_push( $meta, $field );
 			}
