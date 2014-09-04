@@ -359,12 +359,6 @@ class WP_JSON_Posts {
 			return $post;
 		}
 
-		// Hack to add SEO meta
-		$title = WPSEO_Meta::get_value('title', $id);
-		$post['meta']['seo_title'] = $title;
-		$description = WPSEO_Meta::get_value('metadesc', $id);
-		$post['meta']['seo_description'] = $description;
-
 		foreach ( $post['meta']['links'] as $rel => $url ) {
 			$response->link_header( $rel, $url );
 		}
@@ -845,6 +839,11 @@ class WP_JSON_Posts {
 		}
 
 		$_post['meta'] = array( 'links' => $links );
+		// Hack to add SEO meta
+		$title = WPSEO_Meta::get_value('title', $post['ID']);
+		$_post['meta']['seo_title'] = $title;
+		$description = WPSEO_Meta::get_value('metadesc', $post['ID']);
+		$_post['meta']['seo_description'] = $description;
 
 		if ( ! empty( $post['post_parent'] ) ) {
 			$_post['meta']['links']['up'] = json_url( '/posts/' . (int) $post['post_parent'] );
