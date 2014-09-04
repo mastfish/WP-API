@@ -359,6 +359,12 @@ class WP_JSON_Posts {
 			return $post;
 		}
 
+		// Hack to add SEO meta
+		$title = WPSEO_Meta::get_value('title', $id);
+		$post['meta']['seo_title'] = $title;
+		$description = WPSEO_Meta::get_value('metadesc', $id);
+		$post['meta']['seo_description'] = $description;
+
 		foreach ( $post['meta']['links'] as $rel => $url ) {
 			$response->link_header( $rel, $url );
 		}
